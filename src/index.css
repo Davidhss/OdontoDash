@@ -1,0 +1,359 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-accent-primary: #0A7E6A;
+  --color-accent-secondary: #0D9488;
+  --color-accent-alert: #F59E0B;
+  --color-danger: #EF4444;
+
+  --color-background-app: var(--background-app);
+  --color-background-card: var(--background-card);
+  --color-background-sidebar: var(--background-sidebar);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border-card: var(--border-card);
+}
+
+@layer base {
+  :root {
+    --background-app: #F8FAFB;
+    --background-card: #FFFFFF;
+    --background-sidebar: #F0F4F7;
+    --text-primary: #0D1117;
+    --text-secondary: #4B5563;
+    --text-tertiary: #9CA3AF;
+    --border-card: #E2E8F0;
+  }
+
+  .dark {
+    --background-app: #080E1A;
+    --background-card: #0F1623;
+    --background-sidebar: #0C1220;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-tertiary: #475569;
+    --border-card: #1E2A3A;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased transition-colors duration-500 bg-background-app text-text-primary;
+  }
+
+  ::selection {
+    @apply bg-accent-primary/20 text-accent-primary;
+  }
+}
+
+/* ============================
+   Glass Morphism Effects
+   ============================ */
+.glass-card {
+  background: var(--background-card);
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-sidebar {
+  background: rgba(var(--background-sidebar-rgb, 240, 244, 247), 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-modal {
+  background: var(--background-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ============================
+   Glow Effects
+   ============================ */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(10, 126, 106, 0.2), 0 0 60px rgba(10, 126, 106, 0.05);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: 0 0 30px rgba(10, 126, 106, 0.3), 0 0 80px rgba(10, 126, 106, 0.1);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 20px rgba(13, 148, 136, 0.2);
+}
+
+.glow-alert {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.glow-danger {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+/* ============================
+   Gradient Text
+   ============================ */
+.gradient-text {
+  background: linear-gradient(135deg, #0A7E6A, #0D9488, #10B981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================
+   Custom Scrollbar
+   ============================ */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.25);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.45);
+}
+
+/* ============================
+   Input Focus Effects
+   ============================ */
+.input-focus {
+  @apply outline-none transition-all duration-200 focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10;
+}
+
+.input-focus-error {
+  @apply outline-none transition-all duration-200 focus:border-danger focus:ring-2 focus:ring-danger/10;
+}
+
+/* ============================
+   Button Animations
+   ============================ */
+.btn-hover {
+  @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+}
+
+/* ============================
+   Card Hover Effects
+   ============================ */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
+}
+
+/* ============================
+   Loading Skeleton
+   ============================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(156, 163, 175, 0.1) 25%,
+    rgba(156, 163, 175, 0.2) 50%,
+    rgba(156, 163, 175, 0.1) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ============================
+   Badge Styles
+   ============================ */
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.badge-primary {
+  @apply px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-accent-primary/10 text-accent-primary;
+}
+
+.badge-success {
+  @apply px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600;
+}
+
+.badge-warning {
+  @apply px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600;
+}
+
+.badge-danger {
+  @apply px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/10 text-red-600;
+}
+
+/* ============================
+   Recharts Customizations
+   ============================ */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(156, 163, 175, 0.12);
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(10, 126, 106, 0.04);
+}
+
+/* ============================
+   Utility: Hide Scrollbar
+   ============================ */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================
+   Transitions
+   ============================ */
+.transition-smooth {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.transition-fast {
+  @apply transition-all duration-150 ease-in-out;
+}
+
+/* ============================
+   Animated Border
+   ============================ */
+.animated-border {
+  position: relative;
+  border-radius: 16px;
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  background: linear-gradient(90deg, #0A7E6A, #0D9488, #10B981, #0A7E6A);
+  background-size: 300% 100%;
+  animation: border-rotate 4s linear infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.animated-border:hover::before {
+  opacity: 1;
+}
+
+@keyframes border-rotate {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* ============================
+   Float Animation
+   ============================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ============================
+   Pulse Glow
+   ============================ */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(10, 126, 106, 0.2); }
+  50% { box-shadow: 0 0 35px rgba(10, 126, 106, 0.4), 0 0 60px rgba(10, 126, 106, 0.1); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* ============================
+   Slide In Up
+   ============================ */
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.4s ease-out forwards;
+}
+
+/* ============================
+   Frosted Glass Enhanced
+   ============================ */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .frosted-glass {
+  background: rgba(15, 22, 35, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ============================
+   Number Counter Animation
+   ============================ */
+@keyframes count-up {
+  from { opacity: 0; transform: scale(0.8) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-count-up {
+  animation: count-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ============================
+   Progress Bar Animated
+   ============================ */
+@keyframes progress-fill {
+  from { width: 0%; }
+}
+
+.animate-progress {
+  animation: progress-fill 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ============================
+   Backdrop Blur Fallback
+   ============================ */
+@supports not (backdrop-filter: blur(12px)) {
+  .glass-card {
+    background: var(--background-card);
+  }
+  .glass-sidebar {
+    background: var(--background-sidebar);
+  }
+}

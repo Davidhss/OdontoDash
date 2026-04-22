@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Users\\\\david\\\\Downloads\\\\blent-growth-dashboard\" && npm run dev)",
+      "Bash(cd \"C:\\\\Users\\\\david\\\\Downloads\\\\blent-growth-dashboard\" && npm install)"
+    ]
+  }
+}
