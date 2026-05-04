@@ -153,7 +153,6 @@ export const TestesCriativos: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-background-sidebar/50 border-b border-border-card text-xs font-bold text-text-tertiary uppercase tracking-wider">
-                <th className="p-4 w-12 text-center">Mídia</th>
                 <th className="p-4 min-w-[200px]">
                   <div className="flex items-center">Nome <SortIcon field="nome" /></div>
                 </th>
@@ -182,7 +181,7 @@ export const TestesCriativos: React.FC = () => {
             <tbody className="divide-y divide-border-card/50">
               {filteredAndSortedCriativos.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="p-8 text-center text-text-tertiary">
+                  <td colSpan={9} className="p-8 text-center text-text-tertiary">
                     Nenhum teste de criativo encontrado.
                   </td>
                 </tr>
@@ -199,17 +198,6 @@ export const TestesCriativos: React.FC = () => {
                       transition={{ delay: i * 0.05 }}
                       className="hover:bg-background-sidebar/30 transition-colors group"
                     >
-                      {/* Midia */}
-                      <td className="p-4">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-background-app flex items-center justify-center border border-border-card flex-shrink-0">
-                          {teste.imagem_url ? (
-                            <img src={teste.imagem_url} alt="Midia" className="w-full h-full object-cover" />
-                          ) : (
-                            <ImageIcon size={16} className="text-text-tertiary" />
-                          )}
-                        </div>
-                      </td>
-
                       {/* Nome */}
                       <td className="p-4">
                         <div className="font-bold text-sm text-text-primary line-clamp-2">{teste.nome}</div>
