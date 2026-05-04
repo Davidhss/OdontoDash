@@ -53,7 +53,7 @@ export const FAB: React.FC<FABProps> = ({ onNewLead, onRegisterContact, onLaunch
   ];
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-4">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none">
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
@@ -79,7 +79,7 @@ export const FAB: React.FC<FABProps> = ({ onNewLead, onRegisterContact, onLaunch
                   action.onClick();
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-3 group"
+                className="flex items-center gap-3 group pointer-events-auto"
               >
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
@@ -96,13 +96,13 @@ export const FAB: React.FC<FABProps> = ({ onNewLead, onRegisterContact, onLaunch
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}
                   className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center text-white transition-all duration-300",
+                    "w-12 h-12 rounded-xl flex items-center justify-center text-white transition-all duration-300",
                     action.color,
                     action.glow,
                     action.hover
                   )}
                 >
-                  <action.icon size={22} />
+                  <action.icon size={20} />
                 </motion.div>
               </motion.button>
             ))}
@@ -111,12 +111,12 @@ export const FAB: React.FC<FABProps> = ({ onNewLead, onRegisterContact, onLaunch
       </AnimatePresence>
 
       <motion.button
-        whileHover={{ scale: 1.08, rotate: isOpen ? 90 : 0 }}
+        whileHover={{ scale: 1.08, rotate: isOpen ? 90 : 0, opacity: 1 }}
         whileTap={{ scale: 0.92 }}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-2xl transition-all duration-300 relative overflow-hidden",
-          isOpen ? "bg-gradient-to-br from-danger-600 to-danger-500" : "bg-gradient-to-br from-accent-primary to-accent-secondary shadow-[0_0_30px_rgba(10,126,106,0.5)] hover:shadow-[0_0_40px_rgba(10,126,106,0.7)]"
+          "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all duration-300 relative overflow-hidden backdrop-blur-md pointer-events-auto",
+          isOpen ? "bg-gradient-to-br from-danger-600 to-danger-500 opacity-100" : "bg-gradient-to-br from-accent-primary/70 to-accent-secondary/70 opacity-70 hover:opacity-100 shadow-[0_0_20px_rgba(10,126,106,0.3)] hover:shadow-[0_0_30px_rgba(10,126,106,0.6)]"
         )}
       >
         <motion.div
@@ -124,7 +124,7 @@ export const FAB: React.FC<FABProps> = ({ onNewLead, onRegisterContact, onLaunch
           animate={isOpen ? {} : { x: ['100%', '-100%'] }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
         />
-        {isOpen ? <X size={32} className="relative z-10" /> : <Plus size={32} className="relative z-10" />}
+        {isOpen ? <X size={24} className="relative z-10" /> : <Plus size={24} className="relative z-10" />}
       </motion.button>
     </div>
   );
