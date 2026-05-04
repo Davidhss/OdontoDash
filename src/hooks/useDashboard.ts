@@ -15,6 +15,7 @@ export function useDashboard(mesAno?: Date) {
   const [kpis, setKpis] = useState({
     totalLeads: 0,
     totalConsultas: 0,
+    totalConsultasRealizadas: 0,
     totalClientes: 0,
     investimentoTotal: 0,
     totalFaturamento: 0,
@@ -47,6 +48,7 @@ export function useDashboard(mesAno?: Date) {
       setLoading(true);
       const totalLeads = 124;
       const totalConsultas = 48;
+      const totalConsultasRealizadas = 32;
       const totalClientes = 18;
       const investimentoTotal = 3500;
       const totalFaturamento = 42000;
@@ -119,7 +121,7 @@ export function useDashboard(mesAno?: Date) {
       ];
 
       setKpis({
-        totalLeads, totalConsultas, totalClientes, investimentoTotal,
+        totalLeads, totalConsultas, totalConsultasRealizadas, totalClientes, investimentoTotal,
         totalFaturamento, cplMedio, roasEstimado, comissaoBlent,
         taxaConversao, leadsPerdidos: 8,
         leadsPorDia, funnelData, jornadaData, angulacaoData,
@@ -165,6 +167,7 @@ export function useDashboard(mesAno?: Date) {
       // KPI calculations
       const totalLeads = leads.length;
       const totalConsultas = leads.filter(l => ['consulta_agendada', 'consulta_realizada', 'cliente_fechado'].includes(l.etapa)).length;
+      const totalConsultasRealizadas = leads.filter(l => ['consulta_realizada', 'cliente_fechado'].includes(l.etapa)).length;
       const totalClientes = leads.filter(l => l.etapa === 'cliente_fechado').length;
       const leadsPerdidos = leads.filter(l => l.etapa === 'perdido').length;
       const investimentoTotal = metrics.reduce((acc, m) => acc + (Number(m.investimento) || 0), 0);
@@ -245,7 +248,7 @@ export function useDashboard(mesAno?: Date) {
       });
 
       setKpis({
-        totalLeads, totalConsultas, totalClientes, investimentoTotal,
+        totalLeads, totalConsultas, totalConsultasRealizadas, totalClientes, investimentoTotal,
         totalFaturamento, cplMedio, roasEstimado, comissaoBlent,
         taxaConversao, leadsPerdidos,
         leadsPorDia, funnelData, jornadaData, angulacaoData,
