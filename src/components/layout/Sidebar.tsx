@@ -8,22 +8,44 @@ import {
   Settings,
   ChevronLeft,
   Stethoscope,
-  Plus,
+  CalendarDays,
+  MessageSquare,
+  RefreshCw,
+  Video,
+  Target,
+  DollarSign,
+  Building2,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { useBusiness } from '../../hooks/useBusiness';
 
 export const Sidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const location = useLocation();
+  const { userRole, businesses } = useBusiness();
+
+  const isOwner = userRole === 'owner' || userRole === 'admin';
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/', emoji: '📊' },
     { icon: Kanban, label: 'Pipeline', path: '/pipeline', emoji: '🎯' },
     { icon: MessageCircle, label: 'WhatsApp', path: '/whatsapp', emoji: '💬' },
+    { icon: CalendarDays, label: 'Agendamentos', path: '/agendamentos', emoji: '📅' },
+    { icon: MessageSquare, label: 'Contatos', path: '/contatos', emoji: '📞' },
+    { icon: RefreshCw, label: 'Follow-up', path: '/follow-up', emoji: '🔄' },
+    { icon: Video, label: 'Apologia', path: '/apologia', emoji: '🎥' },
     { icon: BarChart3, label: 'Anúncios', path: '/ads', emoji: '📈' },
+    { icon: Target, label: 'Metas', path: '/metas', emoji: '🏆' },
+    { icon: DollarSign, label: 'Comissão', path: '/comissao', emoji: '💰' },
     { icon: Settings, label: 'Configurações', path: '/settings', emoji: '⚙️' },
   ];
+
+  const agencyItem = { icon: Building2, label: 'Agência', path: '/agency', emoji: '🏢' };
+
+  const allItems = isOwner
+    ? [...menuItems.slice(0, menuItems.length - 1), agencyItem, menuItems[menuItems.length - 1]]
+    : menuItems;
 
   return (
     <motion.aside
@@ -61,11 +83,12 @@ export const Sidebar: React.FC = () => {
       <div className="mx-4 h-px bg-border-card/60" />
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-1 mt-4">
-        {menuItems.map((item, index) => {
+      <nav className="flex-1 px-3 space-y-1 mt-4 overflow-y-auto scrollbar-hide">
+        {allItems.map((item, index) => {
           const isActive = item.path === '/'
             ? location.pathname === '/'
             : location.pathname.startsWith(item.path);
+          const isAgencyItem = item.path === '/agency';
 
           return (
             <NavLink
@@ -73,6 +96,9 @@ export const Sidebar: React.FC = () => {
               to={item.path}
               className="group relative block"
             >
+              {isAgencyItem && isExpanded && (
+                <div className="h-px bg-border-card mx-2 mb-2 mt-1" />
+              )}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
