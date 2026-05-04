@@ -460,15 +460,18 @@ export function useWhatsApp() {
 
       if (error) throw error;
 
-      // Link chat to lead
+      // Link chat to lead and update contact name
       await supabase
         .from('whatsapp_chats')
-        .update({ lead_id: lead.id })
+        .update({ 
+          lead_id: lead.id,
+          contact_name: leadFormData.nome 
+        })
         .eq('id', chat.id);
 
       // Update local state
-      setChats(prev => prev.map(c => c.id === chat.id ? { ...c, lead_id: lead.id } : c));
-      setActiveChat(prev => prev?.id === chat.id ? { ...prev, lead_id: lead.id } : prev);
+      setChats(prev => prev.map(c => c.id === chat.id ? { ...c, lead_id: lead.id, contact_name: leadFormData.nome } : c));
+      setActiveChat(prev => prev?.id === chat.id ? { ...prev, lead_id: lead.id, contact_name: leadFormData.nome } : prev);
 
       toast.success(`Lead "${leadFormData.nome}" criado no pipeline!`);
       return lead;

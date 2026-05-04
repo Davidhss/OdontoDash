@@ -118,6 +118,8 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
                     className="w-full bg-background-app border border-border-card rounded-xl px-4 py-2.5 text-sm focus:border-accent-primary outline-none"
                   >
                     <option value="Implante">Implante</option>
+                    <option value="Prótese">Prótese</option>
+                    <option value="Protocolo">Protocolo</option>
                     <option value="Facetas">Facetas</option>
                     <option value="Clareamento">Clareamento</option>
                     <option value="Ortodontia">Ortodontia</option>

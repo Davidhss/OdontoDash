@@ -109,6 +109,14 @@ export const LeadPanel: React.FC<LeadPanelProps> = ({ leadId, onClose, onUpdated
 
       if (error) throw error;
 
+      // Update whatsapp_chats name if nome was changed
+      if (finalData.nome) {
+        await supabase
+          .from('whatsapp_chats')
+          .update({ contact_name: finalData.nome })
+          .eq('lead_id', lead.id);
+      }
+
       setLead(prev => prev ? { ...prev, ...finalData } : prev);
       setEditData({});
       setHasChanges(false);
