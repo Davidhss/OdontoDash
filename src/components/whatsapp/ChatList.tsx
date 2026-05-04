@@ -22,7 +22,24 @@ interface ChatListProps {
 }
 
 export const ChatList: React.FC<ChatListProps> = ({ chats, activeChat, onSelectChat }) => {
-  if (chats.length === 0) {
+  // Deduplicate chats by phone number, keeping the most recent
+  const uniqueChats = React.useMemo(() => {
+    const map = new Map<string, WhatsAppChat>();
+    for (const chat of chats) {
+      const key = chat.contact_phone || chat.remote_jid;
+      const existing = map.get(key);
+      if (!existing || (chat.last_message_at && existing.last_message_at && new Date(chat.last_message_at) > new Date(existing.last_message_at))) {
+        map.set(key, chat);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => {
+      const dateA = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+      const dateB = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+      return dateB - dateA;
+    });
+  }, [chats]);
+
+  if (uniqueChats.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3">
@@ -36,7 +53,7 @@ export const ChatList: React.FC<ChatListProps> = ({ chats, activeChat, onSelectC
 
   return (
     <div className="flex-1 overflow-y-auto scrollbar-hide">
-      {chats.map((chat, index) => {
+      {uniqueChats.map((chat, index) => {
         const isActive = activeChat?.id === chat.id;
         const displayName = chat.contact_name || (chat.contact_phone ? formatPhoneDisplay(chat.contact_phone) : 'Desconhecido');
         const initial = displayName[0]?.toUpperCase();

@@ -295,27 +295,55 @@ export function useWhatsApp() {
       const apiMessages = response?.messages?.records || response?.records || response;
       if (!apiMessages || !Array.isArray(apiMessages)) return;
 
-      const messagesToInsert = apiMessages
-        .filter((msg: any) => msg.key && msg.message)
-        .slice(-100) // Last 100 messages
-        .map((msg: any) => ({
-          chat_id: chat.id,
-          message_id: msg.key.id,
-          from_me: msg.key.fromMe || false,
-          content: msg.message?.conversation || 
-                   msg.message?.extendedTextMessage?.text ||
-                   msg.message?.imageMessage?.caption ||
-                   msg.message?.videoMessage?.caption ||
-                   null,
-          media_type: getMediaType(msg.message),
-          timestamp: msg.messageTimestamp 
-            ? new Date(msg.messageTimestamp * 1000).toISOString() 
-            : new Date().toISOString(),
-          status: msg.key.fromMe ? 'READ' : 'READ',
-        }));
+      const processedMessages = await Promise.all(
+        apiMessages
+          .filter((msg: any) => msg.key && msg.message)
+          .slice(-100) // Last 100 messages
+          .map(async (msg: any) => {
+            const mediaType = getMediaType(msg.message);
+            let mediaUrl = null;
+
+            // Fetch base64 for media messages
+            if (['image', 'audio', 'video', 'document', 'sticker'].includes(mediaType)) {
+              try {
+                const mediaResponse = await fetch(`${import.meta.env.VITE_EVOLUTION_API_URL}/chat/getBase64FromMediaMessage/${instance.instance_name}`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': import.meta.env.VITE_EVOLUTION_API_KEY,
+                  },
+                  body: JSON.stringify({ message: msg })
+                });
+                const mediaData = await mediaResponse.json();
+                if (mediaData && mediaData.base64) {
+                  mediaUrl = mediaData.base64.startsWith('data:') ? mediaData.base64 : `data:${getMimeType(mediaType)};base64,${mediaData.base64}`;
+                }
+              } catch (e) {
+                console.error('Failed to fetch media base64', e);
+              }
+            }
+
+            return {
+              chat_id: chat.id,
+              message_id: msg.key.id,
+              from_me: msg.key.fromMe || false,
+              content: msg.message?.conversation || 
+                       msg.message?.extendedTextMessage?.text ||
+                       msg.message?.imageMessage?.caption ||
+                       msg.message?.videoMessage?.caption ||
+                       null,
+              media_type: mediaType,
+              media_url: mediaUrl,
+              timestamp: msg.messageTimestamp 
+                ? new Date(msg.messageTimestamp * 1000).toISOString() 
+                : new Date().toISOString(),
+              status: msg.key.fromMe ? 'READ' : 'READ',
+            };
+          })
+      );
 
       // Insert messages (ignore duplicates)
-      for (const msg of messagesToInsert) {
+      for (const msg of processedMessages) {
         await supabase
           .from('whatsapp_messages')
           .upsert(msg, { 
@@ -575,4 +603,15 @@ function getMediaType(message: any): string {
   if (message.documentMessage) return 'document';
   if (message.stickerMessage) return 'sticker';
   return 'text';
+}
+
+function getMimeType(mediaType: string): string {
+  switch (mediaType) {
+    case 'image': return 'image/jpeg';
+    case 'audio': return 'audio/ogg';
+    case 'video': return 'video/mp4';
+    case 'document': return 'application/pdf';
+    case 'sticker': return 'image/webp';
+    default: return 'application/octet-stream';
+  }
 }

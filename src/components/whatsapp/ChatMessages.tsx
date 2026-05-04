@@ -1,12 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Loader2, Check, CheckCheck, Image, Mic, Video, FileText, Sticker } from 'lucide-react';
+import { Loader2, Check, CheckCheck, Image, Mic, Video, FileText, Sticker, Play, Pause, Download } from 'lucide-react';
 
 interface WhatsAppMessage {
   id: string;
   from_me: boolean;
   content: string | null;
   media_type: string;
+  media_url: string | null;
   timestamp: string;
   status: string;
 }
@@ -15,6 +16,91 @@ interface ChatMessagesProps {
   messages: WhatsAppMessage[];
   loading: boolean;
 }
+
+// Audio Player Component
+const AudioPlayer: React.FC<{ url: string; fromMe: boolean }> = ({ url, fromMe }) => {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const pct = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+    setProgress(isNaN(pct) ? 0 : pct);
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) setDuration(audioRef.current.duration);
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setProgress(0);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audioRef.current.currentTime = pct * audioRef.current.duration;
+  };
+
+  const formatTime = (seconds: number) => {
+    if (isNaN(seconds)) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="flex items-center gap-2.5 min-w-[200px]">
+      <audio
+        ref={audioRef}
+        src={url}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleEnded}
+        preload="metadata"
+      />
+      <button
+        onClick={togglePlay}
+        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+          fromMe
+            ? 'bg-white/20 hover:bg-white/30 text-white'
+            : 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-500'
+        }`}
+      >
+        {isPlaying ? <Pause size={16} /> : <Play size={16} className="ml-0.5" />}
+      </button>
+      <div className="flex-1 flex flex-col gap-1">
+        <div
+          className="h-1.5 rounded-full cursor-pointer overflow-hidden"
+          style={{ background: fromMe ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.08)' }}
+          onClick={handleSeek}
+        >
+          <div
+            className={`h-full rounded-full transition-all ${fromMe ? 'bg-white/70' : 'bg-emerald-500'}`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <span className={`text-[10px] ${fromMe ? 'text-white/50' : 'text-text-tertiary'}`}>
+          {formatTime(audioRef.current?.currentTime || 0)} / {formatTime(duration)}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -55,7 +141,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading })
                           radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.02) 0%, transparent 50%)`,
       }}
     >
-      {groupedMessages.map(({ date, msgs }, groupIndex) => (
+      {groupedMessages.map(({ date, msgs }) => (
         <div key={date} className="space-y-1">
           {/* Date Separator */}
           <div className="flex items-center justify-center my-4">
@@ -80,11 +166,71 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading })
                     : 'bg-background-card border border-border-card text-text-primary rounded-tl-sm shadow-sm'
                 }`}
               >
-                {/* Media Type Icon */}
-                {msg.media_type !== 'text' && (
+                {/* Audio Player */}
+                {msg.media_type === 'audio' && msg.media_url && (
+                  <AudioPlayer url={msg.media_url} fromMe={msg.from_me} />
+                )}
+
+                {/* Audio without URL - show label */}
+                {msg.media_type === 'audio' && !msg.media_url && (
+                  <div className={`flex items-center gap-1.5 text-xs ${msg.from_me ? 'text-white/70' : 'text-text-tertiary'}`}>
+                    <Mic size={14} />
+                    <span>🎙️ Áudio</span>
+                  </div>
+                )}
+
+                {/* Image */}
+                {msg.media_type === 'image' && msg.media_url && (
+                  <div className="mb-1.5 rounded-xl overflow-hidden">
+                    <img
+                      src={msg.media_url}
+                      alt="Imagem"
+                      className="max-w-full rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => window.open(msg.media_url!, '_blank')}
+                    />
+                  </div>
+                )}
+
+                {/* Video */}
+                {msg.media_type === 'video' && msg.media_url && (
+                  <div className="mb-1.5 rounded-xl overflow-hidden">
+                    <video
+                      src={msg.media_url}
+                      controls
+                      className="max-w-full rounded-xl"
+                      preload="metadata"
+                    />
+                  </div>
+                )}
+
+                {/* Document */}
+                {msg.media_type === 'document' && msg.media_url && (
+                  <a
+                    href={msg.media_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl mb-1.5 transition-all ${
+                      msg.from_me ? 'bg-white/10 hover:bg-white/20' : 'bg-background-sidebar border border-border-card hover:bg-border-card/30'
+                    }`}
+                  >
+                    <FileText size={18} />
+                    <span className="text-xs font-medium">📄 Documento</span>
+                    <Download size={14} className="ml-auto opacity-60" />
+                  </a>
+                )}
+
+                {/* Non-audio media label for items without URL */}
+                {msg.media_type !== 'text' && msg.media_type !== 'audio' && !msg.media_url && (
                   <div className={`flex items-center gap-1.5 text-xs mb-1 ${msg.from_me ? 'text-white/70' : 'text-text-tertiary'}`}>
                     {getMediaIcon(msg.media_type)}
                     <span>{getMediaLabel(msg.media_type)}</span>
+                  </div>
+                )}
+
+                {/* Sticker */}
+                {msg.media_type === 'sticker' && msg.media_url && (
+                  <div className="mb-1">
+                    <img src={msg.media_url} alt="Figurinha" className="w-32 h-32 object-contain" />
                   </div>
                 )}
 
@@ -181,11 +327,11 @@ function getMediaIcon(type: string) {
 
 function getMediaLabel(type: string): string {
   switch (type) {
-    case 'image': return 'Imagem';
-    case 'audio': return 'Áudio';
-    case 'video': return 'Vídeo';
-    case 'document': return 'Documento';
-    case 'sticker': return 'Figurinha';
+    case 'image': return '📷 Imagem';
+    case 'audio': return '🎙️ Áudio';
+    case 'video': return '🎬 Vídeo';
+    case 'document': return '📄 Documento';
+    case 'sticker': return '✨ Figurinha';
     default: return '';
   }
 }

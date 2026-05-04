@@ -60,7 +60,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     >
       <Sidebar />
 
-      <main className="flex-1 ml-[80px] md:ml-[240px] transition-all duration-300">
+      <main className="flex-1 ml-[72px] md:ml-[220px] transition-all duration-300">
         <Header onAddLead={() => setIsLeadModalOpen(true)} />
 
         <motion.div
