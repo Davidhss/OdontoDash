@@ -16,6 +16,7 @@ import { useMetricasAds } from '../hooks/useMetricasAds';
 import { Badge } from '../components/ui/Badge';
 import { CountUp } from '../components/ui/CountUp';
 import { cn, formatCurrency, formatNumber } from '../lib/utils';
+import { TestesCriativos } from '../components/ads/TestesCriativos';
 import { 
   ResponsiveContainer, 
   LineChart, 
@@ -225,6 +226,9 @@ const Ads: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Testes de Criativos */}
+      <TestesCriativos />
     </div>
   );
 };

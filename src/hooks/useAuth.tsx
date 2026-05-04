@@ -10,6 +10,8 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signInDemo: () => void;
   signOut: () => Promise<void>;
+  updateProfile: (data: { full_name?: string; phone?: string; avatar_url?: string }) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -94,8 +96,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   };
 
+  const updateProfile = async (data: { full_name?: string; phone?: string; avatar_url?: string }) => {
+    if (isDemo) {
+      const updatedUser = {
+        ...user,
+        user_metadata: {
+          ...user?.user_metadata,
+          ...data
+        }
+      } as any;
+      setUser(updatedUser);
+      sessionStorage.setItem('demo_user', JSON.stringify(updatedUser));
+      return;
+    }
+
+    const { error, data: updateData } = await supabase.auth.updateUser({
+      data
+    });
+    if (error) throw error;
+    if (updateData.user) {
+      setUser(updateData.user);
+    }
+  };
+
+  const updatePassword = async (password: string) => {
+    if (isDemo) return;
+
+    const { error } = await supabase.auth.updateUser({
+      password
+    });
+    if (error) throw error;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, isDemo, signIn, signUp, signInDemo, signOut }}>
+    <AuthContext.Provider value={{ user, loading, isDemo, signIn, signUp, signInDemo, signOut, updateProfile, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );

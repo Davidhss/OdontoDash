@@ -25,7 +25,14 @@ export const LeadDetailSidebar: React.FC<LeadDetailSidebarProps> = ({ lead, onCl
     anotacoes: '',
     data_consulta: '',
     valor_fechado: 0,
-    etapa: '' as LeadEtapa
+    etapa: '' as LeadEtapa,
+    temperatura: '' as any,
+    fonte: '' as any,
+    servico: '' as any,
+    procedimento_interesse: '' as any,
+    angulo_oferta: '' as any,
+    etapa_jornada: '' as any,
+    created_at: ''
   });
 
   const [newContato, setNewContato] = useState({
@@ -43,9 +50,16 @@ export const LeadDetailSidebar: React.FC<LeadDetailSidebarProps> = ({ lead, onCl
         nome: lead.nome,
         telefone: lead.telefone || '',
         anotacoes: lead.anotacoes || '',
-        data_consulta: lead.data_consulta || '',
+        data_consulta: lead.data_consulta ? lead.data_consulta.substring(0, 16) : '',
         valor_fechado: Number(lead.valor_fechado) || 0,
-        etapa: lead.etapa
+        etapa: lead.etapa,
+        temperatura: lead.temperatura || 'morno',
+        fonte: lead.fonte || 'Meta Ads',
+        servico: lead.servico || 'Outro',
+        procedimento_interesse: lead.procedimento_interesse || 'Outro',
+        angulo_oferta: lead.angulo_oferta || 'Direto',
+        etapa_jornada: lead.etapa_jornada || 'Descoberta',
+        created_at: lead.created_at ? lead.created_at.substring(0, 10) : ''
       });
     }
   }, [lead]);
@@ -54,7 +68,11 @@ export const LeadDetailSidebar: React.FC<LeadDetailSidebarProps> = ({ lead, onCl
 
   const handleUpdateLead = async () => {
     setIsSaving(true);
-    await updateLead(lead.id, formData);
+    const submitData = {
+      ...formData,
+      data_consulta: formData.data_consulta || null
+    };
+    await updateLead(lead.id, submitData);
     setIsSaving(false);
   };
 
@@ -152,6 +170,18 @@ export const LeadDetailSidebar: React.FC<LeadDetailSidebarProps> = ({ lead, onCl
                     />
                   </div>
                   <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Data de Entrada do Lead</label>
+                    <input 
+                      type="date"
+                      value={formData.created_at}
+                      onChange={e => setFormData({...formData, created_at: e.target.value})}
+                      className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
                     <label className="text-[10px] font-bold text-text-tertiary uppercase">Telefone</label>
                     <div className="relative">
                       <input 
@@ -172,9 +202,9 @@ export const LeadDetailSidebar: React.FC<LeadDetailSidebarProps> = ({ lead, onCl
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Data da Consulta</label>
+                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Data e Horário da Consulta</label>
                     <input 
-                      type="date"
+                      type="datetime-local"
                       value={formData.data_consulta}
                       onChange={e => setFormData({...formData, data_consulta: e.target.value})}
                       className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
@@ -188,6 +218,70 @@ export const LeadDetailSidebar: React.FC<LeadDetailSidebarProps> = ({ lead, onCl
                       onChange={e => setFormData({...formData, valor_fechado: Number(e.target.value)})}
                       className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
                     />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Etapa</label>
+                    <select
+                      value={formData.etapa}
+                      onChange={e => setFormData({...formData, etapa: e.target.value as any})}
+                      className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
+                    >
+                      <option value="novo_lead">Novos Leads</option>
+                      <option value="contato_feito">Contatos</option>
+                      <option value="consulta_agendada">Agendados</option>
+                      <option value="consulta_realizada">Consultas</option>
+                      <option value="cliente_fechado">Tratamento Fechado</option>
+                      <option value="perdido">Perdido</option>
+                      <option value="desqualificado">Desqualificado</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Temperatura</label>
+                    <select
+                      value={formData.temperatura}
+                      onChange={e => setFormData({...formData, temperatura: e.target.value as any})}
+                      className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
+                    >
+                      <option value="quente">Quente</option>
+                      <option value="morno">Morno</option>
+                      <option value="frio">Frio</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Procedimento Interesse</label>
+                    <select
+                      value={formData.procedimento_interesse}
+                      onChange={e => setFormData({...formData, procedimento_interesse: e.target.value as any})}
+                      className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
+                    >
+                      <option value="Implante">Implante</option>
+                      <option value="Facetas">Facetas</option>
+                      <option value="Clareamento">Clareamento</option>
+                      <option value="Avaliação">Avaliação</option>
+                      <option value="Ortodontia">Ortodontia</option>
+                      <option value="Outro">Outro</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-text-tertiary uppercase">Fonte</label>
+                    <select
+                      value={formData.fonte}
+                      onChange={e => setFormData({...formData, fonte: e.target.value as any})}
+                      className="w-full bg-background-app border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
+                    >
+                      <option value="Meta Ads">Meta Ads</option>
+                      <option value="Google">Google</option>
+                      <option value="Indicação">Indicação</option>
+                      <option value="Instagram Orgânico">Instagram Orgânico</option>
+                      <option value="Caminhada">Caminhada</option>
+                      <option value="Outro">Outro</option>
+                    </select>
                   </div>
                 </div>
 

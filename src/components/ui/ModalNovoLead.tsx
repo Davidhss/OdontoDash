@@ -21,10 +21,11 @@ export const ModalNovoLead: React.FC<ModalNovoLeadProps> = ({ isOpen, onClose })
     fonte: 'Meta Ads' as LeadFonte,
     temperatura: 'morno' as LeadTemperature,
     etapa: 'novo_lead' as LeadEtapa,
-    anotacoes: ''
+    anotacoes: '',
+    data_consulta: ''
   });
-  const [errors, setErrors] = useState({ nome: '', telefone: '' });
-  const [touched, setTouched] = useState({ nome: false, telefone: false });
+  const [errors, setErrors] = useState({ nome: '', telefone: '', data_consulta: '' });
+  const [touched, setTouched] = useState({ nome: false, telefone: false, data_consulta: false });
 
   const validateField = (field: 'nome' | 'telefone', value: string) => {
     if (field === 'nome') {
@@ -50,16 +51,21 @@ export const ModalNovoLead: React.FC<ModalNovoLeadProps> = ({ isOpen, onClose })
 
     const newErrors = {
       nome: validateField('nome', formData.nome),
-      telefone: validateField('telefone', formData.telefone)
+      telefone: validateField('telefone', formData.telefone),
+      data_consulta: formData.etapa === 'consulta_agendada' && !formData.data_consulta ? 'Data e horário são obrigatórios para agendamento' : ''
     };
 
     setErrors(newErrors);
-    setTouched({ nome: true, telefone: true });
+    setTouched({ nome: true, telefone: true, data_consulta: true });
 
-    if (newErrors.nome) return;
+    if (newErrors.nome || newErrors.data_consulta) return;
 
     setLoading(true);
-    const success = await createLead(formData);
+    const submitData = {
+      ...formData,
+      data_consulta: formData.data_consulta || null
+    };
+    const success = await createLead(submitData);
     setLoading(false);
 
     if (success) {
@@ -70,10 +76,11 @@ export const ModalNovoLead: React.FC<ModalNovoLeadProps> = ({ isOpen, onClose })
         fonte: 'Meta Ads',
         temperatura: 'morno',
         etapa: 'novo_lead',
-        anotacoes: ''
+        anotacoes: '',
+        data_consulta: ''
       });
-      setErrors({ nome: '', telefone: '' });
-      setTouched({ nome: false, telefone: false });
+      setErrors({ nome: '', telefone: '', data_consulta: '' });
+      setTouched({ nome: false, telefone: false, data_consulta: false });
       onClose();
     }
   };
@@ -248,6 +255,38 @@ export const ModalNovoLead: React.FC<ModalNovoLeadProps> = ({ isOpen, onClose })
             <option value="consulta_agendada">📅 Consulta Agendada</option>
           </select>
         </motion.div>
+
+        {formData.etapa === 'consulta_agendada' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-2"
+          >
+            <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">
+              Data e Horário da Consulta <span className="text-danger">*</span>
+            </label>
+            <input
+              type="datetime-local"
+              required
+              value={formData.data_consulta}
+              onChange={e => setFormData({ ...formData, data_consulta: e.target.value })}
+              className={cn(
+                "w-full bg-background-sidebar border border-border-card rounded-xl px-4 py-3 transition-all input-focus",
+                touched.data_consulta && errors.data_consulta && "border-danger input-focus-error"
+              )}
+            />
+            {touched.data_consulta && errors.data_consulta && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-danger text-xs flex items-center gap-1"
+              >
+                <AlertCircle size={12} />
+                {errors.data_consulta}
+              </motion.p>
+            )}
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}

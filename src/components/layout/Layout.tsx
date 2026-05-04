@@ -8,6 +8,7 @@ import { ModalRegistrarContato } from '../ui/ModalRegistrarContato';
 import { ModalLancamentoMetricas } from '../ui/ModalLancamentoMetricas';
 import { useBusiness } from '../../hooks/useBusiness';
 import { WelcomeScreen } from '../ui/WelcomeScreen';
+import { CompleteProfileModal } from '../auth/CompleteProfileModal';
 import { useNavigate } from 'react-router-dom';
 
 interface LayoutProps {
@@ -94,6 +95,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           isOpen={isMetricsModalOpen}
           onClose={() => setIsMetricsModalOpen(false)}
         />
+        
+        <CompleteProfileModal onComplete={() => {}} />
       </AnimatePresence>
     </motion.div>
   );

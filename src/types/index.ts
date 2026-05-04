@@ -9,9 +9,10 @@ export type BusinessRow = Database['public']['Tables']['businesses']['Row'];
 export type FollowUpRow = Database['public']['Tables']['follow_up']['Row'];
 export type ApologiaRow = Database['public']['Tables']['apologia']['Row'];
 export type ComissaoMensalRow = Database['public']['Tables']['comissao_mensal']['Row'];
+export type TesteCriativoRow = Database['public']['Tables']['testes_criativos']['Row'];
 
 export type LeadTemperature = 'quente' | 'morno' | 'frio';
-export type LeadEtapa = 'novo_lead' | 'contato_feito' | 'consulta_agendada' | 'consulta_realizada' | 'cliente_fechado' | 'perdido';
+export type LeadEtapa = 'novo_lead' | 'contato_feito' | 'consulta_agendada' | 'consulta_realizada' | 'cliente_fechado' | 'perdido' | 'desqualificado';
 export type LeadFonte = 'Meta Ads' | 'Google' | 'Indicação' | 'Instagram Orgânico' | 'Caminhada' | 'Outro';
 export type LeadServico = 'Clareamento' | 'Implante' | 'Ortodontia' | 'Limpeza' | 'Canal' | 'Prótese' | 'Facetas' | 'Avaliação' | 'Outro';
 
@@ -38,6 +39,14 @@ export interface Atividade extends AtividadeRow {}
 export interface FollowUp extends FollowUpRow {}
 export interface Apologia extends ApologiaRow {}
 export interface ComissaoMensal extends ComissaoMensalRow {}
+
+export type FormatoCriativo = 'Estático' | 'Carrossel' | 'Vídeo';
+export type StatusCriativo = 'Ativo' | 'Pausado' | 'Concluído';
+
+export interface TesteCriativo extends Omit<TesteCriativoRow, 'formato' | 'status'> {
+  formato: FormatoCriativo;
+  status: StatusCriativo;
+}
 
 export interface Meta {
   atual: number;

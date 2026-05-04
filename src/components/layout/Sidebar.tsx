@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Kanban,
   MessageSquare,
+  MessageCircle,
   BarChart3,
   Target,
   Settings,
@@ -30,6 +31,7 @@ export const Sidebar: React.FC = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/', color: 'from-accent-primary to-accent-secondary' },
     { icon: Kanban, label: 'Pipeline', path: '/pipeline', color: 'from-accent-primary to-accent-secondary' },
+    { icon: MessageCircle, label: 'WhatsApp', path: '/whatsapp', color: 'from-emerald-500 to-green-600' },
     { icon: CalendarDays, label: 'Agendamentos', path: '/agendamentos', color: 'from-blue-500 to-indigo-600' },
     { icon: MessageSquare, label: 'Contatos', path: '/contatos', color: 'from-accent-primary to-accent-secondary' },
     { icon: RefreshCw, label: 'Follow-up', path: '/follow-up', color: 'from-accent-primary to-accent-secondary' },

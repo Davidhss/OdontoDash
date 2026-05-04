@@ -478,6 +478,62 @@ export interface Database {
           }
         ]
       }
+      testes_criativos: {
+        Row: {
+          id: string
+          business_id: string
+          created_at: string | null
+          nome: string
+          servico_foco: string
+          verba_diaria: number
+          investimento_total: number
+          leads_gerados: number
+          mqls_gerados: number
+          formato: string
+          status: string
+          imagem_url: string | null
+          tags: string[] | null
+        }
+        Insert: {
+          id?: string
+          business_id: string
+          created_at?: string | null
+          nome: string
+          servico_foco: string
+          verba_diaria?: number
+          investimento_total?: number
+          leads_gerados?: number
+          mqls_gerados?: number
+          formato: string
+          status?: string
+          imagem_url?: string | null
+          tags?: string[] | null
+        }
+        Update: {
+          id?: string
+          business_id?: string
+          created_at?: string | null
+          nome?: string
+          servico_foco?: string
+          verba_diaria?: number
+          investimento_total?: number
+          leads_gerados?: number
+          mqls_gerados?: number
+          formato?: string
+          status?: string
+          imagem_url?: string | null
+          tags?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "testes_criativos_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

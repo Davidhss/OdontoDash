@@ -34,6 +34,7 @@ const COLUMNS: { id: LeadEtapa; title: string; color: string }[] = [
   { id: 'consulta_realizada', title: 'Consultas', color: 'bg-emerald-500' },
   { id: 'cliente_fechado', title: 'Tratamento Fechado', color: 'bg-indigo-600' },
   { id: 'perdido', title: 'Perdido', color: 'bg-danger' },
+  { id: 'desqualificado', title: 'Desqualificado', color: 'bg-gray-500' },
 ];
 
 const Pipeline: React.FC = () => {

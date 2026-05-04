@@ -12,6 +12,7 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import AgencyView from './pages/AgencyView';
 import Agendamentos from './pages/Agendamentos';
+import WhatsApp from './pages/WhatsApp';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { BusinessProvider } from './hooks/useBusiness';
@@ -63,6 +64,7 @@ function AppContent() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/agendamentos" element={<Agendamentos />} />
+          <Route path="/whatsapp" element={<WhatsApp />} />
           <Route path="/contatos" element={<Contatos />} />
           <Route path="/ads" element={<Ads />} />
           <Route path="/metas" element={<Metas />} />
