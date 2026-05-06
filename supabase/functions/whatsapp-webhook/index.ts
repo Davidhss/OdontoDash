@@ -40,14 +40,26 @@ Deno.serve(async (req) => {
         .eq('remote_jid', remoteJid)
         .single()
 
-      const content = msg.message?.conversation || 
-                      msg.message?.extendedTextMessage?.text || 
-                      msg.message?.imageMessage?.caption || 
-                      msg.message?.videoMessage?.caption || 
-                      (msg.message?.imageMessage ? '📷 Imagem' : 
-                       msg.message?.audioMessage ? '🎵 Áudio' : 
-                       msg.message?.videoMessage ? '🎥 Vídeo' : 
-                       msg.message?.documentMessage ? '📄 Documento' : 'Mensagem');
+      // Extração robusta de conteúdo
+      let content = '';
+      const m = msg.message;
+      if (!m) return new Response('No message content');
+
+      if (m.conversation) content = m.conversation;
+      else if (m.extendedTextMessage?.text) content = m.extendedTextMessage.text;
+      else if (m.imageMessage) content = m.imageMessage.caption || '📷 Imagem';
+      else if (m.videoMessage) content = m.videoMessage.caption || '🎥 Vídeo';
+      else if (m.audioMessage) content = '🎵 Áudio';
+      else if (m.documentMessage) content = m.documentMessage.title || m.documentMessage.caption || '📄 Documento';
+      else if (m.stickerMessage) content = '🎨 Figurinha';
+      else if (m.contactMessage) content = `👤 Contato: ${m.contactMessage.displayName}`;
+      else if (m.locationMessage) content = '📍 Localização';
+      else if (m.buttonsResponseMessage) content = m.buttonsResponseMessage.selectedButtonId || 'Botão selecionado';
+      else if (m.listResponseMessage) content = m.listResponseMessage.title || 'Item da lista selecionado';
+      else if (m.viewOnceMessageV2?.message?.imageMessage) content = '📷 Imagem (Visualização única)';
+      else if (m.viewOnceMessageV2?.message?.videoMessage) content = '🎥 Vídeo (Visualização única)';
+      else content = 'Mensagem de mídia ou formato não suportado';
+
 
       const timestamp = new Date(msg.messageTimestamp * 1000).toISOString()
 

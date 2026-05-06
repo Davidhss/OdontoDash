@@ -332,10 +332,17 @@ export function useWhatsApp() {
               message_id: msg.key.id,
               from_me: msg.key.fromMe || false,
               content: msg.message?.conversation || 
-                       msg.message?.extendedTextMessage?.text ||
-                       msg.message?.imageMessage?.caption ||
-                       msg.message?.videoMessage?.caption ||
-                       null,
+                 msg.message?.extendedTextMessage?.text || 
+                 msg.message?.imageMessage?.caption || 
+                 msg.message?.videoMessage?.caption ||
+                 (msg.message?.imageMessage ? '📷 Imagem' : 
+                  msg.message?.audioMessage ? '🎵 Áudio' : 
+                  msg.message?.videoMessage ? '🎥 Vídeo' : 
+                  msg.message?.documentMessage ? '📄 Documento' : 
+                  msg.message?.stickerMessage ? '🎨 Figurinha' :
+                  msg.message?.contactMessage ? '👤 Contato' :
+                  msg.message?.locationMessage ? '📍 Localização' :
+                  'Mensagem'),
               media_type: mediaType,
               media_url: mediaUrl,
               timestamp: msg.messageTimestamp 
