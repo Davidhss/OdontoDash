@@ -524,18 +524,33 @@ export function useWhatsApp() {
     }
   }, [instance]);
 
-  // Periodic chat polling (every 15s for new messages)
+  // Periodic chat polling (every 3s for new messages - Fallback while Realtime is being setup)
   useEffect(() => {
     if (connectionStatus === 'open' && instance) {
       chatPollingRef.current = setInterval(() => {
         syncChats(instance.instance_name);
-      }, 15000);
+      }, 3000);
     }
 
     return () => {
       if (chatPollingRef.current) clearInterval(chatPollingRef.current);
     };
   }, [connectionStatus, instance, syncChats]);
+
+  // Periodic message polling when a chat is active (every 5s)
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (connectionStatus === 'open' && activeChat) {
+      interval = setInterval(() => {
+        syncMessages(activeChat);
+      }, 5000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [connectionStatus, activeChat, syncMessages]);
 
   // Realtime subscription for chats
   useEffect(() => {
