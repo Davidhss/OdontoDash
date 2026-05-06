@@ -505,13 +505,15 @@ export function useWhatsApp() {
   }, [instance]);
 
   // Disconnect WhatsApp
-
   const disconnect = useCallback(async () => {
     if (!instance) return;
     try {
-      await evoApi.logoutInstance(instance.instance_name);
+      // Tentar deslogar na API, mas prosseguir mesmo se falhar
+      await evoApi.logoutInstance(instance.instance_name).catch(e => console.warn('Falha ao deslogar na Evolution API:', e));
+      
       setConnectionStatus('disconnected');
       setQrCode(null);
+      setInstance(null);
       
       await supabase
         .from('whatsapp_instances')
@@ -521,8 +523,10 @@ export function useWhatsApp() {
       toast.success('WhatsApp desconectado');
     } catch (err) {
       console.error('Erro ao desconectar:', err);
+      toast.error('Erro ao desconectar');
     }
   }, [instance]);
+
 
   // Periodic chat polling (every 3s for new messages - Fallback while Realtime is being setup)
   useEffect(() => {
@@ -629,12 +633,17 @@ export function useWhatsApp() {
     selectChat,
     sendMessage,
     createLeadFromChat,
-    syncChats: () => instance ? syncChats(instance.instance_name) : null,
-    syncMessages: () => activeChat ? syncMessages(activeChat) : null,
+    syncChats: async () => {
+      if (instance) await syncChats(instance.instance_name);
+    },
+    syncMessages: async () => {
+      if (activeChat) await syncMessages(activeChat);
+    },
     loadChats,
     registerWebhook,
   };
 }
+
 
 
 // Helper
