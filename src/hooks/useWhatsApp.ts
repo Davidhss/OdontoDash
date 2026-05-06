@@ -206,8 +206,12 @@ export function useWhatsApp() {
           
           // Start syncing chats
           syncChats(instanceName);
+
+          // Register webhook automatically
+          registerWebhook(instanceName);
         }
       } catch (err) {
+
         console.error('Polling error:', err);
       }
     }, 3000);
@@ -482,7 +486,26 @@ export function useWhatsApp() {
     }
   }, [activeBusiness]);
 
+  // Register Webhook on Evolution API
+  const registerWebhook = useCallback(async (instanceName?: string) => {
+    const name = instanceName || instance?.instance_name;
+    if (!name) return;
+
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const webhookUrl = `${supabaseUrl}/functions/v1/whatsapp-webhook`;
+      
+      console.log('Registrando Webhook:', webhookUrl);
+      await evoApi.setWebhook(name, webhookUrl);
+      toast.success('Webhook de tempo real configurado!');
+    } catch (err) {
+      console.error('Erro ao registrar webhook:', err);
+      toast.error('Erro ao configurar tempo real');
+    }
+  }, [instance]);
+
   // Disconnect WhatsApp
+
   const disconnect = useCallback(async () => {
     if (!instance) return;
     try {
@@ -594,8 +617,10 @@ export function useWhatsApp() {
     syncChats: () => instance ? syncChats(instance.instance_name) : null,
     syncMessages: () => activeChat ? syncMessages(activeChat) : null,
     loadChats,
+    registerWebhook,
   };
 }
+
 
 // Helper
 function getMediaType(message: any): string {

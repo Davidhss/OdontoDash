@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { X, Save, Image as ImageIcon, Link as LinkIcon, DollarSign, Target, Tag, MousePointer2 } from 'lucide-react';
-import { TesteCriativo, FormatoCriativo, StatusCriativo } from '../../types';
+import { X, Save, Image as ImageIcon, Link as LinkIcon, DollarSign, Target, Tag, MousePointer2, Megaphone, Eye, Users, ShoppingCart, Percent, Database } from 'lucide-react';
+import { TesteCriativo, FormatoCriativo, StatusCriativo, ObjetivoCampanha } from '../../types';
 
 interface ModalTesteCriativoProps {
   onClose: () => void;
   onSave: (data: Partial<TesteCriativo>) => Promise<void>;
   teste: TesteCriativo | null;
 }
+
+const OBJETIVOS: { value: ObjetivoCampanha; label: string; icon: React.ReactNode; desc: string; color: string }[] = [
+  { value: 'Captação de Leads', label: 'Captação de Leads', icon: <Target size={18} />, desc: 'Gerar novos contatos e leads qualificados', color: 'border-blue-500 bg-blue-500/10 text-blue-400' },
+  { value: 'Branding / Posicionamento', label: 'Branding', icon: <Megaphone size={18} />, desc: 'Aumentar autoridade e reconhecimento', color: 'border-purple-500 bg-purple-500/10 text-purple-400' },
+  { value: 'Engajamento / Seguidores', label: 'Engajamento', icon: <Users size={18} />, desc: 'Crescer seguidores e interações', color: 'border-pink-500 bg-pink-500/10 text-pink-400' },
+  { value: 'Venda Direta', label: 'Venda Direta', icon: <ShoppingCart size={18} />, desc: 'Converter diretamente em vendas', color: 'border-emerald-500 bg-emerald-500/10 text-emerald-400' },
+  { value: 'Oferta / Desconto', label: 'Oferta / Desconto', icon: <Percent size={18} />, desc: 'Promover ofertas e descontos especiais', color: 'border-amber-500 bg-amber-500/10 text-amber-400' },
+  { value: 'Coleta de Dados', label: 'Coleta de Dados', icon: <Database size={18} />, desc: 'Coletar informações e pesquisas', color: 'border-cyan-500 bg-cyan-500/10 text-cyan-400' },
+];
 
 export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose, onSave, teste }) => {
   const [formData, setFormData] = useState({
@@ -19,8 +28,17 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
     mqls_gerados: 0,
     formato: 'Estático' as FormatoCriativo,
     status: 'Ativo' as StatusCriativo,
+    objetivo: 'Captação de Leads' as ObjetivoCampanha,
     imagem_url: '',
-    tags: ''
+    tags: '',
+    impressoes: 0,
+    alcance: 0,
+    engajamentos: 0,
+    cliques: 0,
+    resultados_dia: 0,
+    gasto_hoje: 0,
+    conversoes: 0,
+    faturamento_gerado: 0,
   });
   
   const [isSaving, setIsSaving] = useState(false);
@@ -36,8 +54,17 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
         mqls_gerados: teste.mqls_gerados,
         formato: teste.formato,
         status: teste.status,
+        objetivo: teste.objetivo || 'Captação de Leads',
         imagem_url: teste.imagem_url || '',
-        tags: (teste.tags || []).join(', ')
+        tags: (teste.tags || []).join(', '),
+        impressoes: teste.impressoes || 0,
+        alcance: teste.alcance || 0,
+        engajamentos: teste.engajamentos || 0,
+        cliques: teste.cliques || 0,
+        resultados_dia: teste.resultados_dia || 0,
+        gasto_hoje: teste.gasto_hoje || 0,
+        conversoes: teste.conversoes || 0,
+        faturamento_gerado: teste.faturamento_gerado || 0,
       });
     }
   }, [teste]);
@@ -46,7 +73,6 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
     e.preventDefault();
     setIsSaving(true);
     
-    // Process tags
     const tagsArray = formData.tags
       .split(',')
       .map(t => t.trim())
@@ -59,6 +85,11 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
     
     setIsSaving(false);
   };
+
+  const objetivo = formData.objetivo;
+  const showLeadMetrics = objetivo === 'Captação de Leads' || objetivo === 'Oferta / Desconto' || objetivo === 'Coleta de Dados';
+  const showBrandingMetrics = objetivo === 'Branding / Posicionamento' || objetivo === 'Engajamento / Seguidores';
+  const showSalesMetrics = objetivo === 'Venda Direta' || objetivo === 'Oferta / Desconto';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -74,11 +105,11 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-2xl bg-background-card border border-border-card rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-3xl bg-background-card border border-border-card rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         <div className="flex items-center justify-between p-6 border-b border-border-card bg-background-sidebar/50">
           <h2 className="text-xl font-bold text-text-primary">
-            {teste ? 'Editar Teste de Criativo' : 'Novo Teste de Criativo'}
+            {teste ? 'Editar Campanha' : 'Nova Campanha'}
           </h2>
           <button 
             onClick={onClose}
@@ -91,6 +122,38 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
         <div className="p-6 overflow-y-auto custom-scrollbar">
           <form id="teste-form" onSubmit={handleSubmit} className="space-y-6">
             
+            {/* Seção 0: Objetivo da Campanha */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                <Megaphone size={14} className="text-accent-primary" /> Objetivo da Campanha
+              </h3>
+              <p className="text-[11px] text-text-tertiary -mt-2">
+                Selecione o objetivo principal — isso define quais métricas serão acompanhadas.
+              </p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {OBJETIVOS.map((obj) => (
+                  <button
+                    key={obj.value}
+                    type="button"
+                    onClick={() => setFormData({...formData, objetivo: obj.value})}
+                    className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all text-center ${
+                      formData.objetivo === obj.value 
+                        ? `${obj.color} shadow-lg scale-[1.02]`
+                        : 'border-border-card bg-background-app/30 text-text-tertiary hover:border-text-tertiary/50 hover:bg-background-app/50'
+                    }`}
+                  >
+                    {formData.objetivo === obj.value && (
+                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-current animate-pulse" />
+                    )}
+                    <span className="text-lg">{obj.icon}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide">{obj.label}</span>
+                    <span className="text-[9px] opacity-70 leading-tight">{obj.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Seção 1: Informações Básicas */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
@@ -99,13 +162,13 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-text-tertiary uppercase">Nome do Criativo</label>
+                  <label className="text-[10px] font-bold text-text-tertiary uppercase">Nome da Campanha</label>
                   <input 
                     type="text"
                     required
                     value={formData.nome}
                     onChange={e => setFormData({...formData, nome: e.target.value})}
-                    placeholder="Ex: Vídeo Depoimento João"
+                    placeholder="Ex: Branding Implante - Post Depoimento"
                     className="w-full bg-background-app border border-border-card rounded-xl px-4 py-2.5 text-sm focus:border-accent-primary outline-none"
                   />
                 </div>
@@ -124,6 +187,7 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
                     <option value="Clareamento">Clareamento</option>
                     <option value="Ortodontia">Ortodontia</option>
                     <option value="Avaliação">Avaliação</option>
+                    <option value="Geral">Geral (Clínica)</option>
                     <option value="Outro">Outro</option>
                   </select>
                 </div>
@@ -178,7 +242,6 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
                     className="w-full bg-background-app border border-border-card rounded-xl pl-9 pr-4 py-2.5 text-sm focus:border-accent-primary outline-none"
                   />
                 </div>
-                <p className="text-[10px] text-text-tertiary mt-1">Isso ajuda a identificar o criativo visualmente. Cole o link da imagem.</p>
               </div>
 
               <div className="space-y-1">
@@ -198,13 +261,13 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
               </div>
             </div>
 
-            {/* Seção 3: Métricas (Para atualização) */}
+            {/* Seção 3: Métricas Financeiras (Sempre visível) */}
             <div className="space-y-4 p-4 rounded-xl bg-background-app/50 border border-border-card/50">
               <h3 className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
-                <DollarSign size={14} className="text-emerald-500" /> Resultados (Atualize Diariamente)
+                <DollarSign size={14} className="text-emerald-500" /> Investimento
               </h3>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-text-tertiary uppercase">Verba Diária (R$)</label>
                   <input 
@@ -230,30 +293,139 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-text-tertiary uppercase flex items-center gap-1">
-                    <MousePointer2 size={10} /> Leads
-                  </label>
+                  <label className="text-[10px] font-bold text-amber-400 uppercase">Gasto Hoje (R$)</label>
                   <input 
                     type="number"
                     min="0"
-                    value={formData.leads_gerados}
-                    onChange={e => setFormData({...formData, leads_gerados: Number(e.target.value)})}
+                    step="0.01"
+                    value={formData.gasto_hoje}
+                    onChange={e => setFormData({...formData, gasto_hoje: Number(e.target.value)})}
+                    className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-amber-500 outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Seção 4: Métricas Dinâmicas por Objetivo */}
+            <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-accent-primary/5 to-purple-500/5 border border-accent-primary/20">
+              <h3 className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                <MousePointer2 size={14} className="text-accent-primary" /> Resultados — {formData.objetivo}
+              </h3>
+              <p className="text-[10px] text-text-tertiary -mt-2">Métricas específicas para este tipo de campanha. Atualize diariamente.</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Sempre visível: Resultados do Dia */}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-accent-primary uppercase">Resultados Hoje</label>
+                  <input 
+                    type="number" min="0"
+                    value={formData.resultados_dia}
+                    onChange={e => setFormData({...formData, resultados_dia: Number(e.target.value)})}
                     className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
                   />
                 </div>
 
+                {/* Sempre visível: Impressões */}
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1">
-                    <Target size={10} /> MQLs
+                  <label className="text-[10px] font-bold text-text-tertiary uppercase flex items-center gap-1">
+                    <Eye size={10} /> Impressões
                   </label>
                   <input 
-                    type="number"
-                    min="0"
-                    value={formData.mqls_gerados}
-                    onChange={e => setFormData({...formData, mqls_gerados: Number(e.target.value)})}
-                    className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-emerald-500 outline-none"
+                    type="number" min="0"
+                    value={formData.impressoes}
+                    onChange={e => setFormData({...formData, impressoes: Number(e.target.value)})}
+                    className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
                   />
                 </div>
+
+                {/* Branding / Engajamento: Alcance e Engajamentos */}
+                {showBrandingMetrics && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-purple-400 uppercase">Alcance</label>
+                      <input 
+                        type="number" min="0"
+                        value={formData.alcance}
+                        onChange={e => setFormData({...formData, alcance: Number(e.target.value)})}
+                        className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-purple-500 outline-none"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-pink-400 uppercase">Engajamentos</label>
+                      <input 
+                        type="number" min="0"
+                        value={formData.engajamentos}
+                        onChange={e => setFormData({...formData, engajamentos: Number(e.target.value)})}
+                        className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-pink-500 outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Lead / Oferta / Coleta: Leads, MQLs, Cliques */}
+                {showLeadMetrics && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-blue-400 uppercase flex items-center gap-1">
+                        <Target size={10} /> Leads
+                      </label>
+                      <input 
+                        type="number" min="0"
+                        value={formData.leads_gerados}
+                        onChange={e => setFormData({...formData, leads_gerados: Number(e.target.value)})}
+                        className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-blue-500 outline-none"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1">
+                        <Target size={10} /> MQLs
+                      </label>
+                      <input 
+                        type="number" min="0"
+                        value={formData.mqls_gerados}
+                        onChange={e => setFormData({...formData, mqls_gerados: Number(e.target.value)})}
+                        className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-emerald-500 outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Cliques (sempre útil) */}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-text-tertiary uppercase flex items-center gap-1">
+                    <MousePointer2 size={10} /> Cliques
+                  </label>
+                  <input 
+                    type="number" min="0"
+                    value={formData.cliques}
+                    onChange={e => setFormData({...formData, cliques: Number(e.target.value)})}
+                    className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-accent-primary outline-none"
+                  />
+                </div>
+
+                {/* Vendas: Conversões e Faturamento */}
+                {showSalesMetrics && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-emerald-400 uppercase">Conversões</label>
+                      <input 
+                        type="number" min="0"
+                        value={formData.conversoes}
+                        onChange={e => setFormData({...formData, conversoes: Number(e.target.value)})}
+                        className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-emerald-500 outline-none"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-emerald-400 uppercase">Faturamento (R$)</label>
+                      <input 
+                        type="number" min="0" step="0.01"
+                        value={formData.faturamento_gerado}
+                        onChange={e => setFormData({...formData, faturamento_gerado: Number(e.target.value)})}
+                        className="w-full bg-background-sidebar border border-border-card rounded-xl px-3 py-2 text-sm focus:border-emerald-500 outline-none"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             
@@ -275,7 +447,7 @@ export const ModalTesteCriativo: React.FC<ModalTesteCriativoProps> = ({ onClose,
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-accent-primary hover:bg-accent-primary/90 disabled:opacity-50 transition-colors shadow-lg shadow-accent-primary/20"
           >
             <Save size={16} />
-            {isSaving ? 'Salvando...' : 'Salvar Criativo'}
+            {isSaving ? 'Salvando...' : 'Salvar Campanha'}
           </button>
         </div>
       </motion.div>

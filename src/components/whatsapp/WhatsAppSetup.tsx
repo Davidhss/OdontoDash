@@ -8,7 +8,9 @@ interface WhatsAppSetupProps {
   instance: any;
   qrCode: string | null;
   connectionStatus: 'disconnected' | 'connecting' | 'open';
+  onRegisterWebhook: () => void;
 }
+
 
 export const WhatsAppSetup: React.FC<WhatsAppSetupProps> = ({
   onSetup,
@@ -16,7 +18,9 @@ export const WhatsAppSetup: React.FC<WhatsAppSetupProps> = ({
   instance,
   qrCode,
   connectionStatus,
+  onRegisterWebhook,
 }) => {
+
   const [instanceName, setInstanceName] = useState('odontoprime');
   const [step, setStep] = useState<'setup' | 'qrcode'>(instance ? 'qrcode' : 'setup');
 
@@ -146,8 +150,19 @@ export const WhatsAppSetup: React.FC<WhatsAppSetupProps> = ({
                     <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
                   </motion.div>
                   <p className="text-lg font-bold text-emerald-500">Conectado com sucesso!</p>
-                  <p className="text-sm text-text-secondary mt-1">As mensagens já estão sendo sincronizadas</p>
+                  <p className="text-sm text-text-secondary mt-1 mb-6">As mensagens já estão sendo sincronizadas</p>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onRegisterWebhook}
+                    className="px-6 py-2.5 rounded-xl bg-background-app border border-emerald-500/30 text-emerald-500 font-semibold text-xs flex items-center gap-2 mx-auto"
+                  >
+                    <CheckCircle2 size={14} />
+                    Ativar Tempo Real
+                  </motion.button>
                 </div>
+
               ) : (
                 <div className="text-center py-8">
                   <Loader2 className="w-12 h-12 animate-spin text-emerald-500 mx-auto mb-4" />

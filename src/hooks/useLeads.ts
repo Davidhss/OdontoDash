@@ -127,6 +127,23 @@ export function useLeads() {
         activeBusiness.id
       );
 
+      // Meta Conversions API Trigger - Novo Lead
+      try {
+        supabase.functions.invoke('meta-capi', {
+          body: {
+            eventName: 'Lead',
+            leadData: {
+              nome: data.nome,
+              telefone: data.telefone
+            }
+          }
+        }).then(response => {
+           if (response.error) console.error('Erro no Meta CAPI:', response.error);
+        });
+      } catch (capiErr) {
+        console.error('Falha ao acionar CAPI:', capiErr);
+      }
+
       toast.success(`Lead ${leadData.nome} criado! Registre o primeiro contato.`);
       return data as Lead;
     } catch (err) {
@@ -145,7 +162,7 @@ export function useLeads() {
     try {
       const { data: oldLead } = await supabase
         .from('leads')
-        .select('etapa, nome, etapa_jornada')
+        .select('etapa, nome, etapa_jornada, telefone')
         .eq('id', id)
         .single();
 
@@ -180,6 +197,31 @@ export function useLeads() {
         if (leadData.etapa === 'cliente_fechado') tipo = 'cliente_fechado';
 
         await logAtividade(tipo, desc, id, oldLead.nome, activeBusiness?.id);
+
+        // Meta Conversions API Trigger
+        let metaEventName = null;
+        if (leadData.etapa === 'consulta_agendada') metaEventName = 'Schedule';
+        if (leadData.etapa === 'cliente_fechado') metaEventName = 'Purchase';
+
+        if (metaEventName) {
+          try {
+            // Chamando a Edge Function de forma assíncrona para não travar a UI
+            supabase.functions.invoke('meta-capi', {
+              body: {
+                eventName: metaEventName,
+                leadData: {
+                  nome: oldLead.nome,
+                  telefone: oldLead.telefone
+                },
+                value: leadData.valor_fechado || 0
+              }
+            }).then(response => {
+               if (response.error) console.error('Erro no Meta CAPI:', response.error);
+            });
+          } catch (capiErr) {
+            console.error('Falha ao acionar CAPI:', capiErr);
+          }
+        }
       }
 
       toast.success('Lead atualizado com sucesso');

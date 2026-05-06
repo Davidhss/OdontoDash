@@ -493,6 +493,15 @@ export interface Database {
           status: string
           imagem_url: string | null
           tags: string[] | null
+          objetivo: string
+          impressoes: number
+          alcance: number
+          engajamentos: number
+          cliques: number
+          resultados_dia: number
+          gasto_hoje: number
+          conversoes: number
+          faturamento_gerado: number
         }
         Insert: {
           id?: string
@@ -508,6 +517,15 @@ export interface Database {
           status?: string
           imagem_url?: string | null
           tags?: string[] | null
+          objetivo?: string
+          impressoes?: number
+          alcance?: number
+          engajamentos?: number
+          cliques?: number
+          resultados_dia?: number
+          gasto_hoje?: number
+          conversoes?: number
+          faturamento_gerado?: number
         }
         Update: {
           id?: string
@@ -523,6 +541,15 @@ export interface Database {
           status?: string
           imagem_url?: string | null
           tags?: string[] | null
+          objetivo?: string
+          impressoes?: number
+          alcance?: number
+          engajamentos?: number
+          cliques?: number
+          resultados_dia?: number
+          gasto_hoje?: number
+          conversoes?: number
+          faturamento_gerado?: number
         }
         Relationships: [
           {

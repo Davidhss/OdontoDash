@@ -42,10 +42,18 @@ export interface ComissaoMensal extends ComissaoMensalRow {}
 
 export type FormatoCriativo = 'Estático' | 'Carrossel' | 'Vídeo';
 export type StatusCriativo = 'Ativo' | 'Pausado' | 'Concluído';
+export type ObjetivoCampanha = 
+  | 'Captação de Leads'
+  | 'Branding / Posicionamento'
+  | 'Engajamento / Seguidores'
+  | 'Venda Direta'
+  | 'Oferta / Desconto'
+  | 'Coleta de Dados';
 
-export interface TesteCriativo extends Omit<TesteCriativoRow, 'formato' | 'status'> {
+export interface TesteCriativo extends Omit<TesteCriativoRow, 'formato' | 'status' | 'objetivo'> {
   formato: FormatoCriativo;
   status: StatusCriativo;
+  objetivo: ObjetivoCampanha;
 }
 
 export interface Meta {

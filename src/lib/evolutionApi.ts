@@ -69,6 +69,29 @@ export async function deleteInstance(instanceName: string) {
   return apiCall(`/instance/delete/${instanceName}`, { method: 'DELETE' });
 }
 
+export async function setWebhook(instanceName: string, webhookUrl: string) {
+  return apiCall(`/webhook/set/${instanceName}`, {
+    method: 'POST',
+    body: JSON.stringify({
+      url: webhookUrl,
+      enabled: true,
+      byEvents: false,
+      base64: false,
+      events: [
+        'MESSAGES_UPSERT',
+        'MESSAGES_UPDATE',
+        'MESSAGES_DELETE',
+        'SEND_MESSAGE',
+        'CONNECTION_UPDATE',
+        'CHATS_UPSERT',
+        'CHATS_UPDATE',
+        'PRESENCE_UPDATE'
+      ],
+    }),
+  });
+}
+
+
 // ========== MESSAGES ==========
 
 export async function sendText(instanceName: string, number: string, text: string) {

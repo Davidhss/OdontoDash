@@ -115,3 +115,8 @@ CREATE POLICY "Users can manage messages from their business chats" ON whatsapp_
 -- Habilitar Realtime nas tabelas de chat
 ALTER PUBLICATION supabase_realtime ADD TABLE whatsapp_chats;
 ALTER PUBLICATION supabase_realtime ADD TABLE whatsapp_messages;
+
+-- Garantir que o Realtime envie todos os dados para filtros funcionarem
+ALTER TABLE whatsapp_chats REPLICA IDENTITY FULL;
+ALTER TABLE whatsapp_messages REPLICA IDENTITY FULL;
+

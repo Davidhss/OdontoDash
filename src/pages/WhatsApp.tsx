@@ -30,7 +30,9 @@ const WhatsApp: React.FC = () => {
     syncChats,
     syncMessages,
     loadChats,
+    registerWebhook,
   } = useWhatsApp();
+
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateLeadModal, setShowCreateLeadModal] = useState(false);
@@ -58,7 +60,9 @@ const WhatsApp: React.FC = () => {
         instance={instance}
         qrCode={qrCode}
         connectionStatus={connectionStatus}
+        onRegisterWebhook={registerWebhook}
       />
+
     );
   }
 
@@ -71,7 +75,9 @@ const WhatsApp: React.FC = () => {
         instance={instance}
         qrCode={qrCode}
         connectionStatus={connectionStatus}
+        onRegisterWebhook={registerWebhook}
       />
+
     );
   }
 
